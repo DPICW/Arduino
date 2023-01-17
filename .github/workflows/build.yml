@@ -1,0 +1,32 @@
+#=================================================
+# Description: Build ubports using GitHub Actions
+# Lisence: MIT
+# Author: 0312birdzhang
+# Credit: https://github.com/P3TERX/Actions-OpenWrt
+#=================================================
+
+name: Build System Image for Ubports
+
+on: 
+  push:
+    tags:
+    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+    
+    - name: Initialization environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+        openjdk-8-jdk android-tools-adb bc bison \
+        build-essential curl flex g++-multilib gcc-multilib gnupg gperf \
+        imagemagick lib32ncurses-dev \
+        lib32readline-dev lib32z1-dev  liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev \
+        libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc yasm zip zlib1g-dev \
+        qemu-user-static qemu-system-ar
