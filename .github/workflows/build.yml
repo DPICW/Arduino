@@ -23,10 +23,41 @@ jobs:
     - name: Initialization environment
       run: |
         sudo apt-get update
-        sudo apt-get install -y \
-        openjdk-8-jdk android-tools-adb bc bison \
-        build-essential curl flex g++-multilib gcc-multilib gnupg gperf \
-        imagemagick lib32ncurses-dev \
-        lib32readline-dev lib32z1-dev  liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev \
-        libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc yasm zip zlib1g-dev \
-        qemu-user-static qemu-system-ar
+        sudo apt install debos bmap-tools android-sdk-libsparse-utils xz-utils f2fs-tools git
+
+    - name: Downloading source code
+      run: |
+        git clone https://github.com/davidebangelista/msm8974-Mobian
+
+    - name: Build HAL
+      run: |
+        cd msm8974-Mobian
+        chmod +x build.sh
+        bash -x build.sh
+      shell: bash
+
+    - name: Make zips
+      run: |
+        ls > log
+        zip -r log.zip log
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.MySecret }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload System-image
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.MySecret }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: log.zip
+        asset_name: log.zip
+        asset_content_type: application/zip
