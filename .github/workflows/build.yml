@@ -1,0 +1,42 @@
+#=================================================
+# Description: Build ubports using GitHub Actions
+# Lisence: MIT
+# Author: 0312birdzhang
+# Credit: https://github.com/P3TERX/Actions-OpenWrt
+#=================================================
+
+name: Build System Image for Ubports
+
+on: 
+  push:
+    tags:
+    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+    
+    - name: Initialization environment
+      run: |
+        sudo apt-get update
+        sudo apt install debos bmap-tools android-sdk-libsparse-utils xz-utils f2fs-tools git
+
+    - name: Downloading source code
+      run: |
+        git clone https://github.com/davidebangelista/msm8974-Mobian
+
+    - name: Build HAL
+      run: |
+        cd msm8974-Mobian
+        chmod +x build.sh
+        bash -x build.sh
+      shell: bash
+
+    - name: Make zips
+      run: |
+        ls > log
+        zip -r log.zip log
